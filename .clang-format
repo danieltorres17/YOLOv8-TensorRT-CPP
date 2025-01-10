@@ -1,6 +1,14 @@
----
-Language:        Cpp
-# BasedOnStyle:  LLVM
-AccessModifierOffset: -4
-ColumnLimit:     140
-IndentWidth:     4
+# Common style
+Language: Cpp
+BasedOnStyle: Google
+
+AccessModifierOffset: -2
+BreakConstructorInitializersBeforeComma: false
+BreakConstructorInitializers: BeforeComma
+ConstructorInitializerIndentWidth: 2
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ColumnLimit: 110
+ReflowComments: true
+SortIncludes: false
+IndentWidth: 2
+TabWidth: 2
