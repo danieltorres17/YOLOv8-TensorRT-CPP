@@ -12,11 +12,18 @@ def generate_launch_description():
   yolo_pkg = get_package_share_path('yolo_tensorrt_cpp')
 
   ld = LaunchDescription()
+  image_input_topic = LaunchConfiguration('image_input_topic')
   onnx_path = LaunchConfiguration('onnx_path')
   trt_engine_path = LaunchConfiguration('trt_engine_path')
   data_yaml_path = LaunchConfiguration('data_yaml_path')
   viz = LaunchConfiguration('viz')
 
+  ld.add_action(
+    DeclareLaunchArgument(
+      'image_input_topic',
+      description='Image input topic.',
+    )
+  )
   ld.add_action(
     DeclareLaunchArgument(
       'onnx_path',
@@ -55,7 +62,7 @@ def generate_launch_description():
           'onnx_path': onnx_path,
           'trt_engine_path': trt_engine_path,
           'data_yaml_path': data_yaml_path,
-          'image_topic': '/image',
+          'image_topic': image_input_topic,
         }
       ],
     )
@@ -67,6 +74,7 @@ def generate_launch_description():
       package='yolo_tensorrt_cpp',
       executable='detection_visualizer_node.py',
       condition=IfCondition(viz),
+      remappings=[('/image', image_input_topic)]
     )
   )
 
@@ -75,7 +83,7 @@ def generate_launch_description():
       package='rqt_image_view',
       executable='rqt_image_view',
       name='image_view',
-      arguments=['/yolov8_processed_image'],
+      arguments=['/yolo_processed_image'],
       condition=IfCondition(viz),
     )
   )

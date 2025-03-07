@@ -2,6 +2,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <yaml-cpp/yaml.h>
 
+#include <chrono>
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -65,7 +66,12 @@ void YoloNode::imageCallback(const sensor_msgs::msg::Image::SharedPtr image_msg)
     return;
   }
 
+  auto obj_det_start = std::chrono::high_resolution_clock::now();
   const auto objects = yolo_->detectObjects(image);
+  auto obj_det_end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> obj_det_processing_elapsed = obj_det_end - obj_det_start;
+  RCLCPP_DEBUG(this->get_logger(), "Detection processing duration: %f seconds",
+               obj_det_processing_elapsed.count());
 
   // Publish detections.
   if (detections_pub_->get_subscription_count() > 0) {
