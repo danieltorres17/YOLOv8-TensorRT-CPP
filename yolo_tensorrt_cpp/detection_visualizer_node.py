@@ -124,7 +124,7 @@ class Yolov8Visualizer(Node):
     super().__init__('yolov8_visualizer')
 
     self._bridge = cv_bridge.CvBridge()
-    self._processed_image_pub = self.create_publisher(Image, '/yolov8_processed_image', self.QUEUE_SIZE)
+    self._processed_image_pub = self.create_publisher(Image, '/yolo_processed_image', self.QUEUE_SIZE)
     self._detections_subscription = message_filters.Subscriber(self, Detection2DArray, '/detections_output')
     self._image_subscription = message_filters.Subscriber(self, Image, '/image')
     self.time_synchronizer = message_filters.TimeSynchronizer(

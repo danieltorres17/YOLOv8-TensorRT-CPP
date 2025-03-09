@@ -90,6 +90,7 @@ vision_msgs::msg::Detection2DArray YoloNode::yoloObjectsToDetectionMessage(
   for (const auto &obj : objects) {
     vision_msgs::msg::Detection2D det_msg;
     det_msg.header.stamp = stamp;
+    det_msg.id = config_.id_class_map.at(obj.label);
     det_msg.bbox.center.position.x = obj.rect.x + (obj.rect.width / 2.0);
     det_msg.bbox.center.position.y = obj.rect.y + (obj.rect.height / 2.0);
     det_msg.bbox.size_x = obj.rect.width;
