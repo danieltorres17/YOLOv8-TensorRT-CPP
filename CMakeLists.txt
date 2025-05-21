@@ -39,7 +39,10 @@ add_subdirectory(libs/tensorrt-cpp-api)
 
 # Build the YoloV8 library
 add_library(YoloV8_TRT SHARED src/yolov8.cpp)
-target_include_directories(YoloV8_TRT PUBLIC libs/tensorrt-cpp-api/src ${YOLO_INCLUDE_DIRS})
+target_include_directories(YoloV8_TRT PUBLIC 
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libs/tensorrt-cpp-api/src> 
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 target_link_libraries(YoloV8_TRT PUBLIC tensorrt_cpp_api ${OpenCV_LIBS})
 
 # Build and link the executables
@@ -81,5 +84,25 @@ install(
     launch
   DESTINATION share/${PROJECT_NAME}
 )
+
+install(
+  DIRECTORY
+    include/
+    ${CMAKE_SOURCE_DIR}/libs/tensorrt-cpp-api/src/
+  DESTINATION include
+)
+
+install(
+  TARGETS tensorrt_cpp_api YoloV8_TRT
+  EXPORT export_YoloV8_TRT
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
+ament_export_targets(export_YoloV8_TRT)
+ament_export_include_directories(include)
+ament_export_include_directories(libs/tensorrt-cpp-api/src)
 
 ament_package()

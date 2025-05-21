@@ -59,7 +59,7 @@ void YoloNode::parseDataYaml() {
 }
 
 void YoloNode::imageCallback(const sensor_msgs::msg::Image::SharedPtr image_msg) {
-  cv::Mat image = cv_bridge::toCvShare(image_msg, "rgb8")->image;
+  cv::Mat image = cv_bridge::toCvShare(image_msg)->image;
   if (image.empty()) {
     RCLCPP_ERROR(this->get_logger(), "Received empty image.");
 
