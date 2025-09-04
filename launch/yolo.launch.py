@@ -10,12 +10,14 @@ import os
 
 def generate_launch_description():
   yolo_pkg = get_package_share_path('yolo_tensorrt_cpp')
+  preprocessing_yaml_path = os.path.join(yolo_pkg, 'config', 'preprocessing.yaml')
 
   ld = LaunchDescription()
   image_input_topic = LaunchConfiguration('image_input_topic')
   onnx_path = LaunchConfiguration('onnx_path')
   trt_engine_path = LaunchConfiguration('trt_engine_path')
   data_yaml_path = LaunchConfiguration('data_yaml_path')
+  apply_preprocessing = LaunchConfiguration('apply_preprocessing')
   node = LaunchConfiguration('node')
   viz = LaunchConfiguration('viz')
 
@@ -47,6 +49,13 @@ def generate_launch_description():
   )
   ld.add_action(
     DeclareLaunchArgument(
+      'apply_preprocessing',
+      default_value='False',
+      description='Whether to apply preprocessing to input images before inference.',
+    )
+  )
+  ld.add_action(
+    DeclareLaunchArgument(
       'node',
       default_value='True',
       description='Launch the yolo node. Set to false to only visualize existing detections.',
@@ -72,6 +81,8 @@ def generate_launch_description():
           'trt_engine_path': trt_engine_path,
           'data_yaml_path': data_yaml_path,
           'image_topic': image_input_topic,
+          'apply_preprocessing': apply_preprocessing,
+          'preprocessing_yaml_path': preprocessing_yaml_path,
         }
       ],
       condition=IfCondition(node),
