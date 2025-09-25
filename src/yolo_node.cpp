@@ -105,6 +105,7 @@ std::optional<YoloNode::PreprocessingParams> YoloNode::loadPreprocessingParams(
 }
 
 void YoloNode::imageCallback(const sensor_msgs::msg::Image::SharedPtr image_msg) {
+  const std::string encoding_str = image_msg->encoding;
   cv::Mat image = cv_bridge::toCvShare(image_msg)->image;
   if (image.empty()) {
     RCLCPP_ERROR(this->get_logger(), "Received empty image.");
@@ -116,6 +117,10 @@ void YoloNode::imageCallback(const sensor_msgs::msg::Image::SharedPtr image_msg)
   cv::cuda::GpuMat gpu_image;
   gpu_image.upload(image);
 
+  if (encoding_str == "rgb8") {
+    cv::cuda::cvtColor(gpu_image, gpu_image, cv::COLOR_RGB2BGR);
+  }
+
   // Apply preprocessing if enabled.
   if (config_.apply_preprocessing && preprocessing_params_) {
     gpu_image = applyPreprocessing(gpu_image, *preprocessing_params_);
@@ -125,7 +130,7 @@ void YoloNode::imageCallback(const sensor_msgs::msg::Image::SharedPtr image_msg)
       gpu_image.download(preprocessed_image);
 
       sensor_msgs::msg::Image preprocessed_msg =
-          *cv_bridge::CvImage(image_msg->header, "rgb8", preprocessed_image).toImageMsg();
+          *cv_bridge::CvImage(image_msg->header, "bgr8", preprocessed_image).toImageMsg();
       preprocess_img_pub_->publish(std::move(preprocessed_msg));
     }
   }
