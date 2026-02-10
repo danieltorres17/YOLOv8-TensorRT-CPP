@@ -1,5 +1,5 @@
 #include "yolo_tensorrt_cpp/yolo_node.hpp"
-#include <cv_bridge/cv_bridge.h>
+#include <cv_bridge/cv_bridge.hpp>
 #include <yaml-cpp/yaml.h>
 
 #include <chrono>

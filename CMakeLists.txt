@@ -21,6 +21,9 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(lifecycle_msgs REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
@@ -64,6 +67,25 @@ add_executable(yolo_node src/yolo_node.cpp)
 target_include_directories(yolo_node PRIVATE ${YOLO_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 ament_target_dependencies(yolo_node rclcpp cv_bridge vision_msgs sensor_msgs)
 target_link_libraries(yolo_node ${OpenCV_LIBS} yaml-cpp YoloV8_TRT)
+
+add_library(yolo_lc_node_component SHARED src/yolo_lc_node.cpp)
+target_include_directories(yolo_lc_node_component PRIVATE ${YOLO_INCLUDE_DIRS})
+ament_target_dependencies(yolo_lc_node_component rclcpp rclcpp_lifecycle rclcpp_components lifecycle_msgs vision_msgs sensor_msgs cv_bridge)
+target_link_libraries(yolo_lc_node_component YoloV8_TRT yaml-cpp)
+
+rclcpp_components_register_node(
+  yolo_lc_node_component
+  PLUGIN "yolo::YoloLcNode"
+  EXECUTABLE yolo_lc_node
+)
+
+install(
+  TARGETS
+    yolo_lc_node_component
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
 
 ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
