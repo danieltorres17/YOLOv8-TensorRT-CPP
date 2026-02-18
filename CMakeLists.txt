@@ -28,6 +28,7 @@ find_package(rclpy REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(vision_msgs REQUIRED)
+find_package(message_filters REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
@@ -73,15 +74,26 @@ target_include_directories(yolo_lc_node_component PRIVATE ${YOLO_INCLUDE_DIRS})
 ament_target_dependencies(yolo_lc_node_component rclcpp rclcpp_lifecycle rclcpp_components lifecycle_msgs vision_msgs sensor_msgs cv_bridge)
 target_link_libraries(yolo_lc_node_component YoloV8_TRT yaml-cpp)
 
+add_library(yolo_viz_node_component SHARED src/yolo_viz_node.cpp)
+target_include_directories(yolo_viz_node_component PRIVATE ${YOLO_INCLUDE_DIRS})
+ament_target_dependencies(yolo_viz_node_component rclcpp rclcpp_components message_filters cv_bridge vision_msgs sensor_msgs)
+
 rclcpp_components_register_node(
   yolo_lc_node_component
   PLUGIN "yolo::YoloLcNode"
   EXECUTABLE yolo_lc_node
 )
 
+rclcpp_components_register_node(
+  yolo_viz_node_component
+  PLUGIN "yolo::YoloVizNode"
+  EXECUTABLE yolo_viz_node
+)
+
 install(
   TARGETS
     yolo_lc_node_component
+    yolo_viz_node_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
